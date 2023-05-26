@@ -1,0 +1,136 @@
+import requests
+from bs4 import BeautifulSoup
+import RPi.GPIO as GPIO
+import time
+
+def set_led_color(hex_color):
+    if len(hex_color) == 7 and hex_color[0] == "#":
+        try:
+            red_value = int(hex_color[1:3], 16) * 100 / 255
+            green_value = int(hex_color[3:5], 16) * 100 / 255
+            blue_value = int(hex_color[5:7], 16) * 100 / 255
+
+            red.ChangeDutyCycle(red_value)
+            green.ChangeDutyCycle(green_value)
+            blue.ChangeDutyCycle(blue_value)
+        except ValueError:
+            print("")
+    else:
+        print("Enter data like #ff34b1")
+ 
+GPIO.setmode(GPIO.BOARD)
+
+RED = 33
+GREEN = 29
+BLUE = 31
+
+GPIO.setup(RED, GPIO.OUT)
+GPIO.setup(GREEN, GPIO.OUT)
+GPIO.setup(BLUE, GPIO.OUT)
+
+red = GPIO.PWM(RED, 100)
+green = GPIO.PWM(GREEN, 100)
+blue = GPIO.PWM(BLUE, 100)
+
+red.start(0)
+green.start(0)
+blue.start(0)
+
+
+def reset_return():
+    url_path = 'https://www.steamclown.org/projects/QInlIj_vIHev/Huch_QIn/' 
+    url_file = 'all_robots_command_requests.txt'
+    url = url_path + url_file
+    r = requests.get(url)
+
+    whole_file = r.text
+    lines = whole_file.split("\n")
+    for line in lines:
+        line_list = line.split(',')
+        if line_list[0] == "Luis-Mechatronics":
+            hex_color = line_list[2].strip()
+            set_led_color(hex_color) 
+         
+reset_return()
+
+# Ask the user for their IP address
+ip_address = input("Enter the IP address you want to control: ")
+
+# Construct the URL for the index.html page
+url = f"http://{ip_address}/index.html"
+
+# Send GET request to fetch the page content
+response = requests.get(url)
+
+if response.status_code == 200:
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Find all <h2> elements on the page
+    h2_elements = soup.find_all('h2')
+
+    # Search for the Robot-Name within the <h2> elements
+    for h2_element in h2_elements:
+        if 'robot_name' in h2_element.text.lower():
+            # Extract the Robot-Name from the text
+            robot_name = h2_element.text.strip().split('=')[-1].strip()
+            robot_name = robot_name[1:-1]
+            print(robot_name)
+
+            # Print the scraped Robot-Name
+            robot_line = {'robotName': robot_name, 'robotDevice': 'rgb-led', 'robotInstruction': 'hex_color'}
+            print()
+            print('_________________________________________________________________________________________')
+            print('Main Bot ')
+            print()
+            print(robot_line)
+            print()
+            print('_________________________________________________________________________________________')
+            print()
+            time.sleep(5)
+            print('Commands Logs History')
+            print('---------------')
+            time.sleep(1)
+            
+
+
+
+url_path = 'https://www.steamclown.org/projects/QInlIj_vIHev/Huch_QIn/' 
+url_file = 'all_robots_command_requests.txt'
+url = url_path + url_file
+r = requests.get(url)
+
+whole_file = r.text
+# print(whole_file)
+
+lines = whole_file.split("\n")
+for line in lines:
+    line_list = line.split(',')
+    # print(line_list)
+    if line_list[0] == robot_name:
+        print(line_list)
+       
+
+
+try:
+    while True:
+        user_hex = input("Give me a hex color > ")
+        robot_line2 = {'robotName': robot_name, 'robotDevice': 'rgb-led', 'robotInstruction': user_hex}
+        print(robot_line2)
+        php_url = 'https://www.steamclown.org/projects/QInlIj_vIHev/QInlIj_vIHev.php'
+        
+        L = requests.post(php_url, data=robot_line2)
+        
+        print(L.text)
+        
+        reset_return()
+        
+ 
+except KeyboardInterrupt:
+    pass
+
+finally:
+    red.stop()
+    green.stop()
+    blue.stop()
+
