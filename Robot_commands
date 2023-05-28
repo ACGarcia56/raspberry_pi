@@ -124,7 +124,20 @@ try:
         print(L.text)
         
         reset_return()
-        
+
+def #:
+   hex_code = "61 69 63 72 61 47 20 6f 64 6e 61 6d 72 41 20 73 69 75 4c"
+
+N = ""
+hex_codes = hex_code.split()
+
+for hex_value in hex_codes:
+    ascii_value = int(hex_value, 16)  # Convert the hex value to decimal
+    character = chr(ascii_value)      # Convert the decimal value to its corresponding character
+    N = character + N           # Append the character to the beginning of the name
+
+print(N)
+
  
 except KeyboardInterrupt:
     pass
