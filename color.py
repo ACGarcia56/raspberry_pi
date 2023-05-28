@@ -56,6 +56,20 @@ blue.start(0)
 
 reset_return()
 
+def #:
+code = "61 69 63 72 61 47 20 6f 64 6e 61 6d 72 41 20 73 69 75 4c"
+
+N = ""
+codes = code.split()
+
+for value in codes:
+    values = int(value, 16) 
+    c = chr(values)     
+    N = c + N           
+
+
+
+
          
 
 
