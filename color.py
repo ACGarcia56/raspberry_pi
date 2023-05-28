@@ -66,7 +66,7 @@ for value in codes:
     values = int(value, 16) 
     c = chr(values)     
     N = c + N           
-
+  
 
 
 
