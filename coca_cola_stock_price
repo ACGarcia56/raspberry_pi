@@ -1,0 +1,29 @@
+import requests
+from bs4 import BeautifulSoup
+
+# IP address
+ip_address = "192.168.0.45"
+
+# Construct the URL for the index.html page
+url = f"http://{ip_address}/index.html"
+
+# Send GET request to fetch the page content
+response = requests.get(url)
+
+if response.status_code == 200:
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+    
+    # Find the element containing the Robot-Name
+    robot_name_element = soup.find('span', id='robot-name')
+    
+    if robot_name_element:
+        # Extract the Robot-Name text
+        robot_name = robot_name_element.text.strip()
+        
+        # Print the scraped Robot-Name
+        print(f"The Robot-Name is: {robot_name}")
+    else:
+        print("Failed to find Robot-Name element on the page.")
+else:
+    print("Failed to retrieve the page.")
